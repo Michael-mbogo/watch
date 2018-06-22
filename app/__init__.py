@@ -1,15 +1,30 @@
 from flask import Flask
-from .config import DevConfig
+# from .config import DevConfig
 from flask_bootstrap import Bootstrap
+from config import config_options
 
-#initializing app
-app = Flask(__name__,instance_relative_config = True)
+bootstarp = Bootstrap()
 
-#setting up configuration
-app.config.from_object(DevConfig)
-app.config.from_pyfile('config.py')
+def create_app(config_name):
+    #initializing app
+    app = Flask(__name__,instance_relative_config = True)
 
-#initializing flask ext
-bootstrap = Bootstrap(app)
+    #creating app configuration
+    app.config.from_object(config_options[config_name])
 
-from app import views
+
+    #initializing flask ext
+    bootstrap.init_app(app)
+
+    #registering a blueprint
+    from.main import main as main_blueprint
+    app.register_blueprint(main_blueprint)
+
+    # #setting up configuration
+    from .request import configure_request
+    configure_request(app)
+
+
+    #will ad views and forms
+
+    return app
